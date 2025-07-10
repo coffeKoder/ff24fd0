@@ -34,8 +34,8 @@ return function (ContainerBuilder $containerBuilder) {
          $cache = $settings->get('database.dev_mode', false)
             ? new ArrayAdapter()
             : new FilesystemAdapter(
-               $dbSettings['cache_directory'] ?? 'storage/cache',
-               $dbSettings['cache_lifetime'] ?? 3600
+               $settings->get('database.cache_namespace', 'storage/cache'),
+               $settings->get('database.cache_lifetime', 3600)
             );
 
 

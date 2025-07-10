@@ -22,7 +22,7 @@ use Viex\Modules\Organizational\Domain\Exceptions\UnitNotFoundException;
 use Viex\Modules\Organizational\Domain\Exceptions\InvalidHierarchyException;
 
 class HierarchyController {
-   
+
    private GetHierarchyTree $getTreeUseCase;
    private GetHierarchyStatistics $getStatsUseCase;
    private MoveUnit $moveUnitUseCase;
@@ -119,7 +119,7 @@ class HierarchyController {
    public function getUnitContext(Request $request, Response $response, array $args): Response {
       try {
          $unitId = (int) $args['id'];
-         
+
          if ($unitId <= 0) {
             $responseData = [
                'status' => 'error',
@@ -165,7 +165,7 @@ class HierarchyController {
    public function getLineage(Request $request, Response $response, array $args): Response {
       try {
          $unitId = (int) $args['id'];
-         
+
          if ($unitId <= 0) {
             $responseData = [
                'status' => 'error',
@@ -211,7 +211,7 @@ class HierarchyController {
    public function getDescendants(Request $request, Response $response, array $args): Response {
       try {
          $unitId = (int) $args['id'];
-         
+
          if ($unitId <= 0) {
             $responseData = [
                'status' => 'error',
@@ -258,7 +258,7 @@ class HierarchyController {
       try {
          $unitId = (int) $args['id'];
          $data = json_decode((string) $request->getBody(), true);
-         
+
          if ($unitId <= 0) {
             $responseData = [
                'status' => 'error',

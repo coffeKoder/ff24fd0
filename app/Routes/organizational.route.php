@@ -1,12 +1,12 @@
 <?php
 /**
- * @package     Organizational/Infrastructure
- * @subpackage  Http
- * @file        Routes
+ * @package     ff24fd0/app
+ * @subpackage  Routes
+ * @file        organizational.route
  * @author      Fernando Castillo <fdocst@gmail.com>
- * @date        2025-07-10 18:15:00
+ * @date        2025-07-10 20:00:00
  * @version     1.0.0
- * @description Rutas HTTP para el módulo Organizational
+ * @description Rutas del módulo Organizational
  */
 
 declare(strict_types=1);
@@ -49,14 +49,12 @@ return function (App $app) {
       });
    });
 
-   // Middleware para CORS (si es necesario)
-   $app->options('/{routes:.+}', function ($request, $response, $args) {
-      return $response;
+   // Rutas adicionales para vistas HTML (opcional)
+   $app->group('/admin/organizational', function (RouteCollectorProxy $group) {
+      // Estas rutas pueden ser implementadas posteriormente para interfaz administrativa
+      $group->get('/dashboard', function ($request, $response) {
+         $response->getBody()->write('Organizational Dashboard - Coming Soon');
+         return $response;
+      });
    });
-
-   // Middleware para autenticación (a implementar según necesidades)
-   // $app->add(new AuthenticationMiddleware());
-
-   // Middleware para autorización basada en roles (a implementar)
-   // $app->add(new AuthorizationMiddleware());
 };

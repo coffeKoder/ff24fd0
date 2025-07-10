@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 
 return [
+
+   'cache_namespace' => 'viex_database', // Espacio de nombres para la caché de la base de datos
    /*
     |--------------------------------------------------------------------------
     | Conexión de Base de Datos por Defecto

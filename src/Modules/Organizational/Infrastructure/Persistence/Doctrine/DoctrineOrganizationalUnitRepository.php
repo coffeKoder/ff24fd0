@@ -13,14 +13,18 @@ declare(strict_types=1);
 
 namespace Viex\Modules\Organizational\Infrastructure\Persistence\Doctrine;
 
-use Viex\Modules\Shared\Infrastructure\Persistence\Doctrine\DoctrineBaseRepository;
 use Viex\Modules\Organizational\Domain\Repository\OrganizationalUnitRepositoryInterface;
 use Viex\Modules\Organizational\Domain\Entities\OrganizationalUnit;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 
-class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implements OrganizationalUnitRepositoryInterface {
+class DoctrineOrganizationalUnitRepository implements OrganizationalUnitRepositoryInterface {
+   private EntityManagerInterface $entityManager;
+   private EntityRepository $repository;
+
    public function __construct(EntityManagerInterface $entityManager) {
-      parent::__construct($entityManager, OrganizationalUnit::class);
+      $this->entityManager = $entityManager;
+      $this->repository = $this->entityManager->getRepository(OrganizationalUnit::class);
    }
 
    /**
@@ -77,7 +81,7 @@ class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implem
     * {@inheritdoc}
     */
    public function findByDepthLevel(int $level): array {
-      $qb = $this->getEntityManager()->createQueryBuilder();
+      $qb = $this->entityManager->createQueryBuilder();
 
       // Construir consulta recursiva basada en el nivel
       if ($level === 0) {
@@ -108,7 +112,7 @@ class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implem
             ORDER BY name ASC
         ";
 
-      $conn = $this->getEntityManager()->getConnection();
+      $conn = $this->entityManager->getConnection();
       $result = $conn->executeQuery($sql, ['level' => $level]);
       $ids = array_column($result->fetchAllAssociative(), 'id');
 
@@ -159,7 +163,7 @@ class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implem
     * {@inheritdoc}
     */
    public function search(string $searchTerm): array {
-      $qb = $this->getEntityManager()->createQueryBuilder();
+      $qb = $this->entityManager->createQueryBuilder();
 
       return $qb->select('ou')
          ->from(OrganizationalUnit::class, 'ou')
@@ -221,7 +225,7 @@ class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implem
             ORDER BY name ASC
         ";
 
-      $conn = $this->getEntityManager()->getConnection();
+      $conn = $this->entityManager->getConnection();
       $result = $conn->executeQuery($sql, ['unitId' => $unitId]);
       $ids = array_column($result->fetchAllAssociative(), 'id');
 
@@ -236,7 +240,7 @@ class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implem
     * {@inheritdoc}
     */
    public function existsByName(string $name, ?int $excludeId = null): bool {
-      $qb = $this->getEntityManager()->createQueryBuilder();
+      $qb = $this->entityManager->createQueryBuilder();
 
       $qb->select('COUNT(ou.id)')
          ->from(OrganizationalUnit::class, 'ou')
@@ -256,7 +260,7 @@ class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implem
     * {@inheritdoc}
     */
    public function existsByNameAndType(string $name, string $type, ?int $excludeId = null): bool {
-      $qb = $this->getEntityManager()->createQueryBuilder();
+      $qb = $this->entityManager->createQueryBuilder();
 
       $qb->select('COUNT(ou.id)')
          ->from(OrganizationalUnit::class, 'ou')
@@ -299,7 +303,7 @@ class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implem
             SELECT COUNT(*) FROM unit_path WHERE id = :ancestorId
         ";
 
-      $conn = $this->getEntityManager()->getConnection();
+      $conn = $this->entityManager->getConnection();
       $result = $conn->executeQuery($sql, [
          'ancestorId' => $ancestorId,
          'descendantId' => $descendantId
@@ -312,7 +316,7 @@ class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implem
     * {@inheritdoc}
     */
    public function getStatisticsByType(): array {
-      $qb = $this->getEntityManager()->createQueryBuilder();
+      $qb = $this->entityManager->createQueryBuilder();
 
       $result = $qb->select('ou.type, COUNT(ou.id) as count')
          ->from(OrganizationalUnit::class, 'ou')
@@ -335,7 +339,7 @@ class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implem
     * {@inheritdoc}
     */
    public function getUniqueTypes(): array {
-      $qb = $this->getEntityManager()->createQueryBuilder();
+      $qb = $this->entityManager->createQueryBuilder();
 
       $result = $qb->select('DISTINCT ou.type')
          ->from(OrganizationalUnit::class, 'ou')
@@ -352,7 +356,7 @@ class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implem
     * {@inheritdoc}
     */
    public function countAssignedUsers(int $unitId): int {
-      $qb = $this->getEntityManager()->createQueryBuilder();
+      $qb = $this->entityManager->createQueryBuilder();
 
       return (int) $qb->select('COUNT(u.id)')
          ->from('App\User\Domain\Entities\User', 'u')
@@ -368,7 +372,7 @@ class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implem
     * {@inheritdoc}
     */
    public function getStatistics(): array {
-      $qb = $this->getEntityManager()->createQueryBuilder();
+      $qb = $this->entityManager->createQueryBuilder();
 
       // Total units
       $total = $qb->select('COUNT(ou.id)')
@@ -418,7 +422,7 @@ class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implem
     * {@inheritdoc}
     */
    public function findPaginated(int $page = 1, int $limit = 20, ?string $search = null, ?string $type = null): array {
-      $qb = $this->getEntityManager()->createQueryBuilder();
+      $qb = $this->entityManager->createQueryBuilder();
       $qb->select('ou')
          ->from(OrganizationalUnit::class, 'ou')
          ->where('ou.softDeleted = false');
@@ -438,6 +442,32 @@ class DoctrineOrganizationalUnitRepository extends DoctrineBaseRepository implem
          ->setMaxResults($limit);
 
       return $qb->getQuery()->getResult();
+   }
+
+   public function findById(int $id): ?OrganizationalUnit {
+      return $this->repository->find($id);
+   }
+
+   public function findAll(): array {
+      return $this->repository->findAll();
+   }
+
+   public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): array {
+      return $this->repository->findBy($criteria, $orderBy, $limit, $offset);
+   }
+
+   public function findOneBy(array $criteria): ?OrganizationalUnit {
+      return $this->repository->findOneBy($criteria);
+   }
+
+   public function save(OrganizationalUnit $unit): void {
+      $this->entityManager->persist($unit);
+      $this->entityManager->flush();
+   }
+
+   public function delete(OrganizationalUnit $unit): void {
+      $this->entityManager->remove($unit);
+      $this->entityManager->flush();
    }
 
 }
