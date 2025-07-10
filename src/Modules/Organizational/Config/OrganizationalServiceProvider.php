@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Viex\Modules\Organizational\Config;
 
 use DI\ContainerBuilder;
+use Doctrine\ORM\EntityManagerInterface;
 use Viex\Modules\Organizational\Domain\Repository\OrganizationalUnitRepositoryInterface;
 use Viex\Modules\Organizational\Infrastructure\Persistence\Doctrine\DoctrineOrganizationalUnitRepository;
 use Viex\Modules\Organizational\Application\Services\OrganizationalHierarchyService;
@@ -29,15 +30,16 @@ use Viex\Modules\Organizational\Application\UseCases\GetHierarchyTree;
 use Viex\Modules\Organizational\Application\UseCases\SearchOrganizationalUnits;
 use Viex\Modules\Organizational\Application\UseCases\GetHierarchyStatistics;
 
+
+
 class OrganizationalServiceProvider {
 
    /**
     * Obtener configuración de servicios para PHP-DI
     */
-   public static function getDefinitions(): array {
-      return [
-            // Repositorio
-         OrganizationalUnitRepositoryInterface::class => \DI\autowire(DoctrineOrganizationalUnitRepository::class),
+   public static function getDefinitions(): array {      return [
+         // Repositorio
+         OrganizationalUnitRepositoryInterface::class => \DI\autowire(\Viex\Modules\Organizational\Infrastructure\Persistence\Doctrine\DoctrineOrganizationalUnitRepository::class),
 
             // Event Dispatcher
          EventDispatcherInterface::class => \DI\autowire(SimpleEventDispatcher::class),
@@ -90,10 +92,11 @@ class OrganizationalServiceProvider {
 
    /**
     * Ejemplo de uso manual (sin contenedor)
+    * @param EntityManagerInterface $entityManager
     */
-   public static function createManualServices(): array {
-      // Crear repositorio (requiere EntityManager de Doctrine)
-      $entityManager = null; // Debe ser inyectado desde el contexto principal
+   public static function createManualServices(EntityManagerInterface $entityManager): array {
+
+      // Crear repositorio con EntityManager inyectado
       $repository = new DoctrineOrganizationalUnitRepository($entityManager);
 
       // Crear event dispatcher
@@ -106,7 +109,7 @@ class OrganizationalServiceProvider {
 
       // Crear casos de uso
       $createUseCase = new CreateOrganizationalUnit($unitManagementService, $eventDispatcher);
-      $updateUseCase = new UpdateOrganizationalUnit($unitManagementService, $eventDispatcher);
+      $updateUseCase = new UpdateOrganizationalUnit($unitManagementService);
       $deleteUseCase = new DeleteOrganizationalUnit($unitManagementService, $hierarchyService, $eventDispatcher);
       $getUseCase = new GetOrganizationalUnit($repository);
       $getTreeUseCase = new GetHierarchyTree($hierarchyService);

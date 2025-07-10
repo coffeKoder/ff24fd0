@@ -1,5 +1,18 @@
 # CHANGELOG - Módulo Organizational
 
+## [1.0.1] - 2025-07-10
+
+### Corregido
+- **OrganizationalServiceProvider**: Corregido uso incorrecto de `\DI\get()` en contexto estático
+- **Inyección de dependencias**: Ajustada firma del método `createManualServices()` para recibir EntityManager como parámetro
+- **Constructores**: Corregido constructor de `UpdateOrganizationalUnit` que solo requiere un parámetro
+- **Imports**: Agregado import de `EntityManagerInterface` para tipado correcto
+- **Namespace**: Corregido namespace del repositorio Doctrine en las definiciones DI
+
+### Agregado
+- **UsageExample**: Archivo de ejemplo mostrando cómo usar el proveedor de servicios con contenedor DI y manualmente
+- **Documentación**: Ejemplos de integración con Slim Framework y configuración típica
+
 ## [1.0.0] - 2025-07-10
 
 ### Agregado
