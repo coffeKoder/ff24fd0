@@ -41,6 +41,13 @@ interface OrganizationalUnitRepositoryInterface {
    public function findActiveUnits(): array;
 
    /**
+    * Obtener todas las unidades (activas e inactivas)
+    * 
+    * @return OrganizationalUnit[]
+    */
+   public function findAll(): array;
+
+   /**
     * Obtener todas las unidades raíz (sin padre)
     * 
     * @return OrganizationalUnit[]
@@ -85,12 +92,12 @@ interface OrganizationalUnitRepositoryInterface {
    /**
     * Verificar si existe una unidad con el nombre especificado
     */
-   public function existsByName(string $name): bool;
+   public function existsByName(string $name, ?int $excludeId = null): bool;
 
    /**
     * Verificar si existe una unidad con el nombre en un tipo específico
     */
-   public function existsByNameAndType(string $name, string $type): bool;
+   public function existsByNameAndType(string $name, string $type, ?int $excludeId = null): bool;
 
    /**
     * Guardar unidad (crear o actualizar)
@@ -115,4 +122,33 @@ interface OrganizationalUnitRepositoryInterface {
     * @return string[]
     */
    public function getUniqueTypes(): array;
+
+   /**
+    * Obtener ancestros de una unidad
+    * 
+    * @return OrganizationalUnit[]
+    */
+   public function findAncestors(int $unitId): array;
+
+   /**
+    * Obtener descendientes de una unidad
+    * 
+    * @return OrganizationalUnit[]
+    */
+   public function findDescendants(int $unitId): array;
+
+   /**
+    * Verificar si una unidad es ancestro de otra
+    */
+   public function isAncestorOf(int $ancestorId, int $descendantId): bool;
+
+   /**
+    * Obtener estadísticas generales
+    */
+   public function getStatistics(): array;
+
+   /**
+    * Contar usuarios asignados a una unidad
+    */
+   public function countAssignedUsers(int $unitId): int;
 }

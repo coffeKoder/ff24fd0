@@ -1,0 +1,59 @@
+# .gitignore para Phast Framework
+
+### Entorno ###
+.env
+.env.local
+.env.testing
+.phpunit.result.cache
+
+### Composer ###
+/vendor/
+composer.lock
+
+### Sistema ###
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
+
+### Logs ###
+/storage/logs/*.log
+*.log
+
+### Cache ###
+/storage/framework/cache/*
+/storage/framework/views/*
+
+### Tests ###
+/tests/_output/*
+/tests/_support/_generated/
+
+### Frontend assets (si se añaden luego) ###
+/node_modules/
+/public/css/
+/public/js/
+/public/hot
+/public/storage
+yarn-error.log
+npm-debug.log
+
+### Backup files ###
+*.bak
+*.tmp
+
+### Sistemas operativos ###
+# Windows
+[Tt]humbs.db
+ehthumbs*.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# macOS
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+~*
+*.swp

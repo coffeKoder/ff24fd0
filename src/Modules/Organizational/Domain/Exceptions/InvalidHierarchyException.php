@@ -106,4 +106,14 @@ class InvalidHierarchyException extends Exception {
          )
       );
    }
+
+   public static function unitCannotBeDeleted(int $unitId, string $reason): self {
+      return new self(
+         sprintf(
+            'La unidad con ID %d no puede ser eliminada: %s',
+            $unitId,
+            $reason
+         )
+      );
+   }
 }

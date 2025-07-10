@@ -1,0 +1,74 @@
+{
+    "name": "nandocdev/viex-app",
+    "description": "ViceRectoria de Extension",
+    "keywords": [],
+    "homepage": "http://github.com/nandocdev/viex-app",
+    "license": "MIT",
+    "type": "project",
+    "version": "1.0.0",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Fernando Castillo",
+            "email": "fdocst@gmail.com",
+            "homepage": "http://github.com/nandocdev"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "ext-json": "*",
+        "aura/session": "^4.0",
+        "doctrine/dbal": "^4.2",
+        "doctrine/orm": "^3.5",
+        "jasongrimes/paginator": "^1.0",
+        "kint-php/kint": "^6.0",
+        "monolog/monolog": "^3.9",
+        "php-di/php-di": "^7.0",
+        "respect/validation": "^2.4",
+        "slim/psr7": "^1.7",
+        "slim/slim": "^4.14",
+        "symfony/cache": "^7.3",
+        "symfony/validator": "^7.3",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "require-dev": {
+        "doctrine/migrations": "^3.9",
+        "jangregor/phpstan-prophecy": "^2.2",
+        "phpspec/prophecy-phpunit": "^2.4",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^9.6",
+        "squizlabs/php_codesniffer": "^3.13"
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        },
+        "process-timeout": 0,
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Viex\\": "src/",
+            "App\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "serve": "php -S localhost:8000 -t public",
+        "serve:dev": "php -S localhost:8000 -t public -d display_errors=1",
+        "post-autoload-dump": [
+            "@php -r \"file_exists('storage') || mkdir('storage', 0755, true);\"",
+            "@php -r \"file_exists('storage/cache') || mkdir('storage/cache', 0755, true);\"",
+            "@php -r \"file_exists('storage/logs') || mkdir('storage/logs', 0755, true);\"",
+            "@php -r \"file_exists('storage/drive') || mkdir('storage/drive', 0755, true);\"",
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php -r \"file_exists('database/migrations') || mkdir('database/migrations', 0755, true);\"",
+            "@php -r \"file_exists('database/seeds') || mkdir('database/seeds', 0755, true);\""
+        ]
+    }
+}
