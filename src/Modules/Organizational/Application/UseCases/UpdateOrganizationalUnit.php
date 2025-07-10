@@ -23,8 +23,7 @@ class UpdateOrganizationalUnit {
       $this->unitManagementService = $unitManagementService;
    }
 
-   public function execute(int $unitId, string $name, string $type): OrganizationalUnitDTO
-   {
+   public function execute(int $unitId, string $name, string $type): OrganizationalUnitDTO {
       return $this->unitManagementService->updateUnit($unitId, $name, $type);
    }
 }

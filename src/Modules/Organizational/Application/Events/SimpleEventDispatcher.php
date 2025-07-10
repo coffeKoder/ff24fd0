@@ -21,7 +21,7 @@ class SimpleEventDispatcher implements EventDispatcherInterface {
     */
    public function dispatch(object $event): void {
       $eventClass = get_class($event);
-      
+
       if (!isset($this->listeners[$eventClass])) {
          return;
       }

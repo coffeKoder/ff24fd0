@@ -3,7 +3,16 @@
  * @package     Organizational
  * @subpackage  Config
  * @file        OrganizationalServiceProvider
- * @author      Fernando Castillo <fdocst@gmail.com>
+ * @author      Fernando         'useCases' => [
+            'create' => $createUseCase,
+            'update' => $updateUseCase,
+            'delete' => $deleteUseCase,
+            'get' => $getUseCase,
+            'getTree' => $getTreeUseCase,
+            'search' => $searchUseCase,
+            'stats' => $statsUseCase,
+            'move' => $moveUseCase,
+         ], <fdocst@gmail.com>
  * @date        2025-07-10 16:40:00
  * @version     1.0.0
  * @description Proveedor de servicios para el módulo Organizational
@@ -29,7 +38,8 @@ use Viex\Modules\Organizational\Application\UseCases\GetOrganizationalUnit;
 use Viex\Modules\Organizational\Application\UseCases\GetHierarchyTree;
 use Viex\Modules\Organizational\Application\UseCases\SearchOrganizationalUnits;
 use Viex\Modules\Organizational\Application\UseCases\GetHierarchyStatistics;
-
+use Viex\Modules\Organizational\Application\UseCases\MoveUnit;
+use Viex\Modules\Organizational\Infrastructure\Cache\HierarchyCacheService;
 
 
 class OrganizationalServiceProvider {
@@ -37,12 +47,16 @@ class OrganizationalServiceProvider {
    /**
     * Obtener configuración de servicios para PHP-DI
     */
-   public static function getDefinitions(): array {      return [
-         // Repositorio
-         OrganizationalUnitRepositoryInterface::class => \DI\autowire(\Viex\Modules\Organizational\Infrastructure\Persistence\Doctrine\DoctrineOrganizationalUnitRepository::class),
+   public static function getDefinitions(): array {
+      return [
+            // Repositorio
+         OrganizationalUnitRepositoryInterface::class => \DI\autowire(DoctrineOrganizationalUnitRepository::class),
 
             // Event Dispatcher
          EventDispatcherInterface::class => \DI\autowire(SimpleEventDispatcher::class),
+
+            // Servicios de infraestructura
+         HierarchyCacheService::class => \DI\autowire(HierarchyCacheService::class),
 
             // Servicios de aplicación
          OrganizationalHierarchyService::class => \DI\autowire(OrganizationalHierarchyService::class),
@@ -57,6 +71,7 @@ class OrganizationalServiceProvider {
          GetHierarchyTree::class => \DI\autowire(GetHierarchyTree::class),
          SearchOrganizationalUnits::class => \DI\autowire(SearchOrganizationalUnits::class),
          GetHierarchyStatistics::class => \DI\autowire(GetHierarchyStatistics::class),
+         MoveUnit::class => \DI\autowire(MoveUnit::class),
       ];
    }
 
@@ -102,8 +117,11 @@ class OrganizationalServiceProvider {
       // Crear event dispatcher
       $eventDispatcher = new SimpleEventDispatcher();
 
+      // Crear servicios de cache
+      $cacheService = new HierarchyCacheService();
+
       // Crear servicios
-      $hierarchyService = new OrganizationalHierarchyService($repository);
+      $hierarchyService = new OrganizationalHierarchyService($repository, $cacheService);
       $unitManagementService = new UnitManagementService($repository, $hierarchyService, $eventDispatcher);
       $contextService = new ContextService($repository, $hierarchyService);
 
@@ -115,6 +133,7 @@ class OrganizationalServiceProvider {
       $getTreeUseCase = new GetHierarchyTree($hierarchyService);
       $searchUseCase = new SearchOrganizationalUnits($hierarchyService);
       $statsUseCase = new GetHierarchyStatistics($hierarchyService);
+      $moveUseCase = new MoveUnit($unitManagementService, $hierarchyService, $eventDispatcher);
 
       return [
          'repository' => $repository,

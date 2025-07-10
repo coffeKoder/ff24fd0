@@ -19,24 +19,32 @@ use Viex\Modules\Organizational\Domain\Exceptions\UnitNotFoundException;
 use Viex\Modules\Organizational\Domain\Exceptions\InvalidHierarchyException;
 use Viex\Modules\Organizational\Application\DTOs\OrganizationalUnitDTO;
 use Viex\Modules\Organizational\Application\DTOs\HierarchyTreeDTO;
+use Viex\Modules\Organizational\Infrastructure\Cache\HierarchyCacheService;
 
 class OrganizationalHierarchyService {
    private OrganizationalUnitRepositoryInterface $repository;
+   private HierarchyCacheService $cacheService;
    private ?array $cachedHierarchy = null;
    private int $cacheTimeout = 3600; // 1 hora
 
-   public function __construct(OrganizationalUnitRepositoryInterface $repository) {
+   public function __construct(
+      OrganizationalUnitRepositoryInterface $repository,
+      HierarchyCacheService $cacheService
+   ) {
       $this->repository = $repository;
+      $this->cacheService = $cacheService;
    }
 
    /**
     * Obtener el árbol jerárquico completo
     */
    public function getFullHierarchy(): array {
+      // Intentar obtener desde cache simple
       if ($this->cachedHierarchy !== null) {
          return $this->cachedHierarchy;
       }
 
+      // Si no está en cache, obtener desde repositorio
       $hierarchyData = $this->repository->findHierarchyTree();
       $this->cachedHierarchy = [];
 
@@ -47,6 +55,14 @@ class OrganizationalHierarchyService {
       }
 
       return $this->cachedHierarchy;
+   }
+
+   /**
+    * Limpiar caché del árbol jerárquico
+    */
+   public function clearHierarchyCache(): void {
+      $this->cachedHierarchy = null;
+      $this->cacheService->flushHierarchy();
    }
 
    /**
@@ -148,28 +164,25 @@ class OrganizationalHierarchyService {
     * Validar que el movimiento de una unidad es válido
     */
    public function validateUnitMove(int $unitId, ?int $newParentId): bool {
-      $unit = $this->repository->findById($unitId);
-      if (!$unit) {
-         throw UnitNotFoundException::withId($unitId);
-      }
-
-      // No puede ser padre de sí mismo
+      // No se puede mover una unidad a sí misma
       if ($unitId === $newParentId) {
-         throw InvalidHierarchyException::selfReference($unit->getName());
+         return false;
       }
 
-      // Si tiene nuevo padre, verificar que no cree ciclo
-      if ($newParentId !== null) {
-         if ($this->isAncestorOf($unitId, $newParentId)) {
-            $newParent = $this->repository->findById($newParentId);
-            throw InvalidHierarchyException::circularReference(
-               $unit->getName(),
-               $newParent ? $newParent->getName() : "ID: $newParentId"
-            );
-         }
+      // Si no hay nuevo padre, es válido (mover a raíz)
+      if ($newParentId === null) {
+         return true;
       }
 
-      return true;
+      // Verificar que el nuevo padre exista
+      $newParent = $this->repository->findById($newParentId);
+      if (!$newParent) {
+         return false;
+      }
+
+      // Verificar que la unidad no sea ancestro del nuevo padre
+      // (esto evitaría ciclos)
+      return !$this->isAncestorOf($unitId, $newParentId);
    }
 
    /**
@@ -193,7 +206,7 @@ class OrganizationalHierarchyService {
       if ($rootId === null) {
          // Obtener todas las unidades raíz
          $rootUnits = $this->getRootUnits();
-         
+
          if (empty($rootUnits)) {
             // Si no hay unidades, crear un DTO vacío con una unidad virtual
             $virtualUnit = new OrganizationalUnitDTO(
@@ -215,7 +228,7 @@ class OrganizationalHierarchyService {
             );
             return new HierarchyTreeDTO($virtualUnit, []);
          }
-         
+
          // Si hay múltiples raíces, crear un nodo virtual que las contenga
          if (count($rootUnits) > 1) {
             $virtualUnit = new OrganizationalUnitDTO(
@@ -241,7 +254,7 @@ class OrganizationalHierarchyService {
             }
             return new HierarchyTreeDTO($virtualUnit, $children);
          }
-         
+
          // Si hay una sola raíz, devolverla
          return $this->getSubTreeForUnit($rootUnits[0]->getId());
       } else {

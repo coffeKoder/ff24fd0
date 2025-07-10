@@ -99,33 +99,36 @@ $event = new HierarchyChanged($affectedUnitIds, $changeType, $metadata);
 Servicio para navegación y validación jerárquica.
 
 **Métodos principales:**
-- `getHierarchyTree(?int $rootId = null): HierarchyTreeDTO`
-- `getSubTreeForUnit(int $unitId): HierarchyTreeDTO`
-- `getLineageForUnit(int $unitId): array`
-- `getDescendantsForUnit(int $unitId): array`
-- `isAncestorOf(int $ancestorId, int $descendantId): bool`
-- `validateUnitMove(int $unitId, ?int $newParentId): bool`
-- `searchUnits(string $searchTerm): array`
-- `getHierarchyStatistics(): array`
+
+-  `getHierarchyTree(?int $rootId = null): HierarchyTreeDTO`
+-  `getSubTreeForUnit(int $unitId): HierarchyTreeDTO`
+-  `getLineageForUnit(int $unitId): array`
+-  `getDescendantsForUnit(int $unitId): array`
+-  `isAncestorOf(int $ancestorId, int $descendantId): bool`
+-  `validateUnitMove(int $unitId, ?int $newParentId): bool`
+-  `searchUnits(string $searchTerm): array`
+-  `getHierarchyStatistics(): array`
 
 ### UnitManagementService
 
 Servicio para gestión CRUD de unidades organizacionales.
 
 **Métodos principales:**
-- `createUnit(string $name, string $type, ?int $parentId = null): OrganizationalUnitDTO`
-- `updateUnit(int $unitId, array $data): OrganizationalUnitDTO`
-- `deleteUnit(int $unitId, bool $forceDelete = false): bool`
-- `moveUnit(int $unitId, ?int $newParentId): OrganizationalUnitDTO`
+
+-  `createUnit(string $name, string $type, ?int $parentId = null): OrganizationalUnitDTO`
+-  `updateUnit(int $unitId, array $data): OrganizationalUnitDTO`
+-  `deleteUnit(int $unitId, bool $forceDelete = false): bool`
+-  `moveUnit(int $unitId, ?int $newParentId): OrganizationalUnitDTO`
 
 ### ContextService
 
 Servicio para resolución de contextos organizacionales.
 
 **Métodos principales:**
-- `getUnitContext(int $unitId): array`
-- `getUserContext(int $userId): array`
-- `resolveContextForResource(string $resourceType, int $resourceId): array`
+
+-  `getUnitContext(int $unitId): array`
+-  `getUserContext(int $userId): array`
+-  `resolveContextForResource(string $resourceType, int $resourceId): array`
 
 ## Casos de Uso
 
@@ -217,29 +220,29 @@ $lineage = $statsUseCase->getLineage(5);
 
 ## Patrones Implementados
 
-- **Command Pattern**: Casos de uso encapsulan operaciones
-- **Event Sourcing**: Eventos para cambios en el dominio
-- **DTO Pattern**: Transferencia de datos entre capas
-- **Service Layer**: Servicios para lógica de aplicación
-- **Repository Pattern**: Acceso a datos abstracto
-- **Observer Pattern**: Event dispatcher para notificaciones
+-  **Command Pattern**: Casos de uso encapsulan operaciones
+-  **Event Sourcing**: Eventos para cambios en el dominio
+-  **DTO Pattern**: Transferencia de datos entre capas
+-  **Service Layer**: Servicios para lógica de aplicación
+-  **Repository Pattern**: Acceso a datos abstracto
+-  **Observer Pattern**: Event dispatcher para notificaciones
 
 ## Validaciones
 
-- Validación de jerarquías circulares
-- Validación de tipos de unidades
-- Validación de permisos de eliminación
-- Validación de movimientos jerárquicos
-- Validación de integridad referencial
+-  Validación de jerarquías circulares
+-  Validación de tipos de unidades
+-  Validación de permisos de eliminación
+-  Validación de movimientos jerárquicos
+-  Validación de integridad referencial
 
 ## Eventos Soportados
 
-- Creación de unidades
-- Modificación de unidades
-- Eliminación de unidades
-- Movimiento de unidades
-- Cambios en jerarquía
-- Activación/desactivación de unidades
+-  Creación de unidades
+-  Modificación de unidades
+-  Eliminación de unidades
+-  Movimiento de unidades
+-  Cambios en jerarquía
+-  Activación/desactivación de unidades
 
 ## Configuración
 

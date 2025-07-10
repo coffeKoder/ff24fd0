@@ -26,7 +26,7 @@ class GetOrganizationalUnit {
 
    public function execute(int $unitId): OrganizationalUnitDTO {
       $unit = $this->repository->findById($unitId);
-      
+
       if (!$unit) {
          throw UnitNotFoundException::withId($unitId);
       }
