@@ -21,32 +21,34 @@ use Doctrine\ORM\ORMSetup;
 use Psr\Cache\CacheItemPoolInterface; // <-- Importante, usaremos la interfaz
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Psr\Log\LoggerInterface;
 
 return function (ContainerBuilder $containerBuilder) {
    $containerBuilder->addDefinitions([
       EntityManagerInterface::class => function (ContainerInterface $container): EntityManagerInterface {
          /** @var SettingsInterface $settings */
          $settings = $container->get(SettingsInterface::class);
-         $isDevMode = $settings->get('database.connections.oracle.dev_mode', false);
+
+         // Leer configuración global de Doctrine
+         $doctrineConfig = $settings->get('database.doctrine', []);
+         $isDevMode = $doctrineConfig['dev_mode'] ?? false;
 
          // --- 1. Crear la instancia de Caché PSR-6 ---
-         // Ya no necesitamos 'DoctrineProvider'. Creamos la instancia de Symfony Cache directamente.
          /** @var CacheItemPoolInterface $cache */
          $cache = $isDevMode
             ? new ArrayAdapter() // Perfecto para desarrollo, no deja archivos.
             : new FilesystemAdapter(
                'doctrine_cache', // Un namespace simple para evitar colisiones.
                0, // Lifetime 0 por defecto para forzar un TTL explícito.
-               $settings->get('database.connections.oracle.cache_dir', 'storage/cache/doctrine')
+               $doctrineConfig['cache_dir'] ?? 'storage/cache/doctrine'
             );
 
          // --- 2. Configuración de Doctrine ORM ---
          // Pasamos la instancia de caché PSR-6 directamente a `ORMSetup`.
-         // Doctrine ORM v3 sabe cómo usar cualquier objeto que implemente CacheItemPoolInterface.
          $config = ORMSetup::createAttributeMetadataConfiguration(
-            paths: $settings->get('database.connections.oracle.metadata_dirs', ['src/Entity']),
+            paths: $doctrineConfig['metadata_dirs'] ?? ['src/Entity'],
             isDevMode: $isDevMode,
-            proxyDir: $settings->get('database.connections.oracle.proxy_dir'),
+            proxyDir: $doctrineConfig['proxy_dir'] ?? null,
             cache: $cache // <-- ¡Punto clave! El caché se pasa aquí.
          );
 
@@ -62,11 +64,17 @@ return function (ContainerBuilder $containerBuilder) {
          }
 
          // --- 3. Crear la Conexión a la Base de Datos ---
-         $connectionParams = $settings->get('database.connections.oracle.connection');
+         // Usar la conexión por defecto configurada
+         $defaultConnection = $settings->get('database.default', 'mysql');
+         $connectionParams = $settings->get("database.connections.{$defaultConnection}");
+
          $connection = DriverManager::getConnection($connectionParams, $config);
 
+
          // --- 4. Crear y Devolver el EntityManager ---
-         return new EntityManager($connection, $config);
+         $cn = new EntityManager($connection, $config);
+         $container->get(LoggerInterface::class)->debug('Conectado a la base de datos: ', ['connection' => $cn]);
+         return $cn;
       }
    ]);
 };

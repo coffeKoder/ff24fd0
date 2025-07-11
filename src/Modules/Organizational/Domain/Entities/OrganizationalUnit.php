@@ -21,7 +21,7 @@ use Viex\Modules\Organizational\Domain\ValueObjects\UnitType;
 use Viex\Modules\Organizational\Domain\ValueObjects\HierarchyPath;
 use Viex\Modules\Organizational\Domain\Exceptions\InvalidHierarchyException;
 
-#[ORM\Entity(repositoryClass: 'Viex\Modules\Organizational\Infrastructure\Persistence\Doctrine\DoctrineOrganizationalUnitRepository')]
+#[ORM\Entity]
 #[ORM\Table(name: 'organizational_units')]
 #[ORM\HasLifecycleCallbacks]
 class OrganizationalUnit {

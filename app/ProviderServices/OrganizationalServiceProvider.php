@@ -28,77 +28,22 @@ use Viex\Modules\Organizational\Infrastructure\Http\HierarchyController;
 
 return function (ContainerBuilder $containerBuilder) {
    $containerBuilder->addDefinitions([
-         // Repository
-      OrganizationalUnitRepositoryInterface::class => function (ContainerInterface $container) {
-         return new DoctrineOrganizationalUnitRepository(
-            $container->get(EntityManagerInterface::class)
-         );
-      },
+         // Repository - Usar autowire para evitar dependencias circulares
+      OrganizationalUnitRepositoryInterface::class => \DI\autowire(DoctrineOrganizationalUnitRepository::class),
 
-         // Event Dispatcher
-      EventDispatcherInterface::class => function (ContainerInterface $container) {
-         return new SimpleEventDispatcher();
-      },
+         // Event Dispatcher - Simple, sin dependencias
+      EventDispatcherInterface::class => \DI\autowire(SimpleEventDispatcher::class),
 
-         // Cache Service
-      HierarchyCacheService::class => function (ContainerInterface $container) {
-         return new HierarchyCacheService();
-      },
+         // Cache Service - Simple, sin dependencias
+      HierarchyCacheService::class => \DI\autowire(HierarchyCacheService::class),
 
-         // Services
-      OrganizationalHierarchyService::class => function (ContainerInterface $container) {
-         return new OrganizationalHierarchyService(
-            $container->get(OrganizationalUnitRepositoryInterface::class),
-            $container->get(HierarchyCacheService::class)
-         );
-      },
+         // Services - Usar autowire para manejo automático de dependencias
+      OrganizationalHierarchyService::class => \DI\autowire(OrganizationalHierarchyService::class),
+      UnitManagementService::class => \DI\autowire(UnitManagementService::class),
+      ContextService::class => \DI\autowire(ContextService::class),
 
-      UnitManagementService::class => function (ContainerInterface $container) {
-         return new UnitManagementService(
-            $container->get(OrganizationalUnitRepositoryInterface::class),
-            $container->get(OrganizationalHierarchyService::class),
-            $container->get(EventDispatcherInterface::class)
-         );
-      },
-
-      ContextService::class => function (ContainerInterface $container) {
-         return new ContextService(
-            $container->get(OrganizationalUnitRepositoryInterface::class),
-            $container->get(OrganizationalHierarchyService::class)
-         );
-      },
-
-         // Controllers
-      OrganizationalController::class => function (ContainerInterface $container) {
-         // Crear servicios manualmente para el controlador
-         $entityManager = $container->get(EntityManagerInterface::class);
-         $manualServices = ModuleServiceProvider::createManualServices($entityManager);
-
-         return new OrganizationalController(
-            $manualServices['useCases']['create'],
-            $manualServices['useCases']['update'],
-            $manualServices['useCases']['delete'],
-            $manualServices['useCases']['get'],
-            $manualServices['useCases']['search']
-         );
-      },
-
-      HierarchyController::class => function (ContainerInterface $container) {
-         // Crear servicios manualmente para el controlador
-         $entityManager = $container->get(EntityManagerInterface::class);
-         $manualServices = ModuleServiceProvider::createManualServices($entityManager);
-
-         return new HierarchyController(
-            $manualServices['useCases']['getTree'],
-            $manualServices['useCases']['stats'],
-            $manualServices['useCases']['move']
-         );
-      },
-
-      // Servicios manuales como fallback
-      'OrganizationalModule_Services' => function (ContainerInterface $container) {
-         $entityManager = $container->get(EntityManagerInterface::class);
-         return ModuleServiceProvider::createManualServices($entityManager);
-      },
+         // Controllers - Usar autowire para evitar duplicación de servicios
+      OrganizationalController::class => \DI\autowire(OrganizationalController::class),
+      HierarchyController::class => \DI\autowire(HierarchyController::class),
    ]);
 };

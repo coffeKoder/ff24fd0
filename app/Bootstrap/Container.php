@@ -24,7 +24,7 @@ class Container {
 
    public function __construct() {
       $this->container = new ContainerBuilder();
-      $this->container->useAutowiring(false);
+      $this->container->useAutowiring(true);
       $this->baseDefinitions();
    }
 
