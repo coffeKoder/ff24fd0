@@ -18,7 +18,7 @@
         "php": "^7.4 || ^8.0",
         "ext-json": "*",
         "aura/session": "^4.0",
-        "doctrine/dbal": "^4.2",
+        "doctrine/dbal": "^4.3",
         "doctrine/orm": "^3.5",
         "jasongrimes/paginator": "^1.0",
         "kint-php/kint": "^6.0",
