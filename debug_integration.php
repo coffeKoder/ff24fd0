@@ -22,7 +22,8 @@ try {
    echo "✓ Aplicación inicializada\n";
 
    // Probar servicios básicos
-   echo "\n--- Probando servicios básicos ---\n";   try {
+   echo "\n--- Probando servicios básicos ---\n";
+   try {
       $entityManager = $container->get(EntityManagerInterface::class);
       echo "✓ EntityManager disponible\n";
    } catch (Exception $e) {
@@ -31,7 +32,7 @@ try {
 
    // Probar servicios del módulo
    echo "\n--- Probando servicios del módulo ---\n";
-   
+
    $testServices = [
       OrganizationalUnitRepositoryInterface::class => 'Repository',
       HierarchyCacheService::class => 'Cache Service',

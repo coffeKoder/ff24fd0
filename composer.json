@@ -33,6 +33,7 @@
     },
     "require-dev": {
         "doctrine/migrations": "^3.9",
+        "filp/whoops": "^2.18",
         "jangregor/phpstan-prophecy": "^2.2",
         "phpspec/prophecy-phpunit": "^2.4",
         "phpstan/extension-installer": "^1.4",

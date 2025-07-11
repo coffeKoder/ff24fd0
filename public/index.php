@@ -20,6 +20,5 @@ $app = new Application();
 $app->addMiddleware(Viex\Shared\Middlewares\SessionMiddleware::class);
 
 
-\Kint\Kint::dump($app);
 
 $app->run();

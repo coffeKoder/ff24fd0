@@ -24,6 +24,7 @@ use \Psr\Http\Message\ServerRequestInterface;
 use Slim\Psr7\Response;
 use Viex\Shared\Application\Handlers\HttpErrorHandler;
 use Viex\Shared\Application\Handlers\ShutdownHandler;
+use Viex\Shared\Application\Handlers\WhoopsErrorHandler;
 use Viex\Shared\Application\ResponseEmitter\ResponseEmitter;
 
 class Application {
@@ -33,6 +34,7 @@ class Application {
    private SettingsInterface $settings;
    private ServerRequestInterface $request;
    private HttpErrorHandler $errorHandler;
+   private WhoopsErrorHandler $whoopsHandler;
 
 
 
@@ -80,9 +82,19 @@ class Application {
    }
 
    private function handlerManager() {
-      // Aquí puedes agregar la lógica para manejar errores, excepciones, etc.
+      // Determinar si estamos en modo debug
+      $isDebugMode = $this->settings->get('debug', false);
+      $displayErrorDetails = $this->settings->get('logger.displayErrorDetails', false);
+
+      // Inicializar el WhoopsErrorHandler
+      $this->whoopsHandler = new WhoopsErrorHandler(
+         $displayErrorDetails,
+         $isDebugMode
+      );
+
+      // Agregar middleware de error con configuración
       $this->app->addErrorMiddleware(
-         $this->settings->get('logger.displayErrorDetails', false),
+         $displayErrorDetails,
          $this->settings->get('logger.logErrors', false),
          $this->settings->get('logger.logErrorDetails', false)
       );
@@ -97,7 +109,7 @@ class Application {
       $shutdownHandler = new ShutdownHandler(
          $this->request,
          $this->errorHandler,
-         $this->settings->get('logger.displayErrorDetails', false),
+         $displayErrorDetails
       );
 
       register_shutdown_function($shutdownHandler);
@@ -116,22 +128,21 @@ class Application {
 
    public function run(): void {
 
-
-
       $this->addRoutes();
       $this->handlerManager();
       $this->exceptionHandler();
 
       $this->app->addRoutingMiddleware();
       $this->app->addBodyParsingMiddleware();
+
       $errorMiddleware = $this->app->addErrorMiddleware(
          $this->settings->get('logger.displayErrorDetails', false),
          $this->settings->get('logger.logErrors', false),
          $this->settings->get('logger.logErrorDetails', false)
       );
-      $errorMiddleware->setDefaultErrorHandler(
-         $this->errorHandler,
-      );
+
+      // Usar WhoopsErrorHandler como manejador de errores predeterminado
+      $errorMiddleware->setDefaultErrorHandler($this->whoopsHandler);
 
       $response = $this->app->handle($this->request);
       $responseEmitter = new ResponseEmitter();

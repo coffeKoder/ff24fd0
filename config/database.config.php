@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 return [
 
+   'dev_mode' => ($_ENV['APP_ENV'] ?? 'local') === 'local',
+
    'cache_namespace' => 'viex_database', // Espacio de nombres para la caché de la base de datos
    /*
     |--------------------------------------------------------------------------
@@ -63,14 +65,8 @@ return [
          'cache_dir' => __DIR__ . '/../storage/cache/doctrine', // Directorio de caché de Doctrine
          'proxy_dir' => __DIR__ . '/../storage/cache/doctrine/proxies', // Directorio para las clases proxy
          'metadata_dirs' => [
-            __DIR__ . '/../src/Modules/Admin/Domain',
-            __DIR__ . '/../src/Modules/Certification/Domain',
-            __DIR__ . '/../src/Modules/Extension/Domain',
-            __DIR__ . '/../src/Modules/Organizational/Domain',
-            __DIR__ . '/../src/Modules/Reporting/Domain',
-            __DIR__ . '/../src/Modules/Shared/Domain',
-            __DIR__ . '/../src/Modules/User/Domain',
-         ], // Donde estarán tus entidades (módulos con Doctrine Attributes)
+            __DIR__ . '/../src/Modules/Organizational/Domain/Entities/', // <-- ¡MUCHO MÁS ESPECÍFICO!
+         ],
          'connection' => [
             'driver' => $_ENV['DB_CONNECTION_ORACLE'] ?? 'oci8',
             'host' => $_ENV['DB_HOST_ORACLE'] ?? '127.0.0.1',
