@@ -33,6 +33,7 @@ return [
       'proxy_dir' => __DIR__ . '/../storage/cache/doctrine/proxies',
       'metadata_dirs' => [
          __DIR__ . '/../src/Modules/Organizational/Domain/Entities',
+         __DIR__ . '/../src/Modules/User/Domain/Entities',
       ],
    ],
 
