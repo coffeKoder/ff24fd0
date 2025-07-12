@@ -104,9 +104,27 @@ src/User/Infrastructure/
 │   ├── TokenGenerator.php
 │   └── RateLimiter.php
 └── Http/
-    ├── ProfileController.php
-    └── UserManagementController.php
+    ├── Controllers/
+    │   ├── AuthController.php
+    │   ├── ProfileController.php
+    │   └── UserManagementController.php
+    ├── Middleware/
+    │   ├── AuthenticationMiddleware.php
+    │   └── AuthorizationMiddleware.php
+    ├── Requests/
+    │   ├── LoginRequest.php
+    │   └── CreateUserRequest.php
+    ├── Responses/
+    │   ├── AuthResponse.php
+    │   └── UserResponse.php
+    └── Routes/
+        └── user.routes.php
 ```
+
+**📋 Provider de Servicios:** `app/ProviderServices/UserServiceProvider.php` ✅ IMPLEMENTADO
+- Configura todas las dependencias del módulo User para inyección de dependencias
+- Mapea interfaces a implementaciones concretas
+- Define el orden correcto de inicialización de servicios
 
 ## Servicios Principales
 
