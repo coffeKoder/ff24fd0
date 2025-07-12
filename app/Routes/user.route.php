@@ -31,109 +31,109 @@ use Viex\Modules\User\Infrastructure\Http\Middleware\AuthorizationMiddleware;
  */
 return function (App $app) {
 
-    // ===========================
-    // RUTAS DE AUTENTICACIÓN
-    // ===========================
-    
-    $app->group('/api/auth', function (RouteCollectorProxy $group) {
-        
-        // Login - Ruta pública
-        $group->post('/login', [AuthController::class, 'login'])
-            ->setName('auth.login');
+   // ===========================
+   // RUTAS DE AUTENTICACIÓN
+   // ===========================
 
-        // Logout - Requiere autenticación
-        $group->post('/logout', [AuthController::class, 'logout'])
-            ->add(AuthenticationMiddleware::class)
-            ->setName('auth.logout');
+   $app->group('/api/auth', function (RouteCollectorProxy $group) {
 
-        // Información del usuario autenticado
-        $group->get('/me', [AuthController::class, 'me'])
-            ->add(AuthenticationMiddleware::class)
-            ->setName('auth.me');
+      // Login - Ruta pública
+      $group->post('/login', [AuthController::class, 'login'])
+         ->setName('auth.login');
 
-        // Extender sesión activa
-        $group->post('/extend-session', [AuthController::class, 'extendSession'])
-            ->add(AuthenticationMiddleware::class)
-            ->setName('auth.extend-session');
-    });
+      // Logout - Requiere autenticación
+      $group->post('/logout', [AuthController::class, 'logout'])
+         ->add(AuthenticationMiddleware::class)
+         ->setName('auth.logout');
 
-    // ===========================
-    // RUTAS DE PERFIL DE USUARIO
-    // ===========================
-    
-    $app->group('/api/profile', function (RouteCollectorProxy $group) {
-        
-        // Obtener perfil del usuario autenticado
-        $group->get('', [ProfileController::class, 'getProfile'])
-            ->setName('profile.get');
+      // Información del usuario autenticado
+      $group->get('/me', [AuthController::class, 'me'])
+         ->add(AuthenticationMiddleware::class)
+         ->setName('auth.me');
 
-        // Actualizar perfil del usuario autenticado
-        $group->put('', [ProfileController::class, 'updateProfile'])
-            ->setName('profile.update');
+      // Extender sesión activa
+      $group->post('/extend-session', [AuthController::class, 'extendSession'])
+         ->add(AuthenticationMiddleware::class)
+         ->setName('auth.extend-session');
+   });
 
-        // Cambiar contraseña del usuario autenticado
-        $group->put('/password', [ProfileController::class, 'changePassword'])
-            ->setName('profile.change-password');
+   // ===========================
+   // RUTAS DE PERFIL DE USUARIO
+   // ===========================
 
-    })->add(AuthenticationMiddleware::class); // Todas las rutas de perfil requieren autenticación
+   $app->group('/api/profile', function (RouteCollectorProxy $group) {
 
-    // ===========================
-    // RUTAS DE ADMINISTRACIÓN DE USUARIOS
-    // ===========================
-    
-    $app->group('/api/users', function (RouteCollectorProxy $group) {
+      // Obtener perfil del usuario autenticado
+      $group->get('', [ProfileController::class, 'getProfile'])
+         ->setName('profile.get');
 
-        // Listar usuarios con filtros y paginación
-        $group->get('', [UserManagementController::class, 'list'])
-            ->setName('users.list');
+      // Actualizar perfil del usuario autenticado
+      $group->put('', [ProfileController::class, 'updateProfile'])
+         ->setName('profile.update');
 
-        // Crear nuevo usuario
-        $group->post('', [UserManagementController::class, 'create'])
-            ->setName('users.create');
+      // Cambiar contraseña del usuario autenticado
+      $group->put('/password', [ProfileController::class, 'changePassword'])
+         ->setName('profile.change-password');
 
-        // Obtener usuario específico por ID
-        $group->get('/{id:[0-9]+}', [UserManagementController::class, 'getById'])
-            ->setName('users.get');
+   })->add(AuthenticationMiddleware::class); // Todas las rutas de perfil requieren autenticación
 
-        // Actualizar datos de usuario específico
-        $group->put('/{id:[0-9]+}', [UserManagementController::class, 'update'])
-            ->setName('users.update');
+   // ===========================
+   // RUTAS DE ADMINISTRACIÓN DE USUARIOS
+   // ===========================
 
-        // Activar usuario específico
-        $group->post('/{id:[0-9]+}/activate', [UserManagementController::class, 'activate'])
-            ->setName('users.activate');
+   $app->group('/api/users', function (RouteCollectorProxy $group) {
 
-        // Desactivar usuario específico
-        $group->post('/{id:[0-9]+}/deactivate', [UserManagementController::class, 'deactivate'])
-            ->setName('users.deactivate');
+      // Listar usuarios con filtros y paginación
+      $group->get('', [UserManagementController::class, 'list'])
+         ->setName('users.list');
 
-        // Cambiar contraseña de usuario específico (admin)
-        $group->put('/{id:[0-9]+}/password', [UserManagementController::class, 'changePassword'])
-            ->setName('users.change-password');
+      // Crear nuevo usuario
+      $group->post('', [UserManagementController::class, 'create'])
+         ->setName('users.create');
 
-    })->add(AuthenticationMiddleware::class); // Todas las rutas de administración requieren autenticación
+      // Obtener usuario específico por ID
+      $group->get('/{id:[0-9]+}', [UserManagementController::class, 'getById'])
+         ->setName('users.get');
 
-    // ===========================
-    // RUTAS CON MIDDLEWARE DE AUTORIZACIÓN
-    // ===========================
-    
-    // Nota: Se pueden agregar middleware de autorización específicos para operaciones sensibles
-    // Ejemplo para futuras implementaciones:
-    
-    /*
-    $app->group('/api/admin/users', function (RouteCollectorProxy $group) {
-        
-        // Operaciones que requieren permisos específicos
-        $group->delete('/{id:[0-9]+}', [UserManagementController::class, 'delete'])
-            ->add((new AuthorizationMiddleware(/* dependencies *//*))
-                ->withPermissions(['users.delete']));
-                
-        $group->post('/{id:[0-9]+}/assign-role', [UserManagementController::class, 'assignRole'])
-            ->add((new AuthorizationMiddleware(/* dependencies *//*))
-                ->withPermissions(['users.assign_roles']));
-                
-    })->add(AuthenticationMiddleware::class);
-    */
+      // Actualizar datos de usuario específico
+      $group->put('/{id:[0-9]+}', [UserManagementController::class, 'update'])
+         ->setName('users.update');
+
+      // Activar usuario específico
+      $group->post('/{id:[0-9]+}/activate', [UserManagementController::class, 'activate'])
+         ->setName('users.activate');
+
+      // Desactivar usuario específico
+      $group->post('/{id:[0-9]+}/deactivate', [UserManagementController::class, 'deactivate'])
+         ->setName('users.deactivate');
+
+      // Cambiar contraseña de usuario específico (admin)
+      $group->put('/{id:[0-9]+}/password', [UserManagementController::class, 'changePassword'])
+         ->setName('users.change-password');
+
+   })->add(AuthenticationMiddleware::class); // Todas las rutas de administración requieren autenticación
+
+   // ===========================
+   // RUTAS CON MIDDLEWARE DE AUTORIZACIÓN
+   // ===========================
+
+   // Nota: Se pueden agregar middleware de autorización específicos para operaciones sensibles
+   // Ejemplo para futuras implementaciones:
+
+   /*
+   $app->group('/api/admin/users', function (RouteCollectorProxy $group) {
+
+       // Operaciones que requieren permisos específicos
+       $group->delete('/{id:[0-9]+}', [UserManagementController::class, 'delete'])
+           ->add((new AuthorizationMiddleware(/* dependencies *//*))
+               ->withPermissions(['users.delete']));
+
+       $group->post('/{id:[0-9]+}/assign-role', [UserManagementController::class, 'assignRole'])
+           ->add((new AuthorizationMiddleware(/* dependencies *//*))
+               ->withPermissions(['users.assign_roles']));
+
+   })->add(AuthenticationMiddleware::class);
+   */
 };
 
 /* 

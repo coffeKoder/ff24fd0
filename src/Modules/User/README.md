@@ -122,9 +122,10 @@ src/User/Infrastructure/
 ```
 
 **📋 Provider de Servicios:** `app/ProviderServices/UserServiceProvider.php` ✅ IMPLEMENTADO
-- Configura todas las dependencias del módulo User para inyección de dependencias
-- Mapea interfaces a implementaciones concretas
-- Define el orden correcto de inicialización de servicios
+
+-  Configura todas las dependencias del módulo User para inyección de dependencias
+-  Mapea interfaces a implementaciones concretas
+-  Define el orden correcto de inicialización de servicios
 
 ## Servicios Principales
 

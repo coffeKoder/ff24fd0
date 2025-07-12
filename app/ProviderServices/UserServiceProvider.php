@@ -92,24 +92,24 @@ return function (ContainerBuilder $containerBuilder) {
 
          // Rate limiting para login attempts
       RateLimiter::class => \DI\autowire(RateLimiter::class),        // ===========================
-        // APPLICATION SERVICES
-        // ===========================
-        
-        // Session Service - Gestión de sesiones nativas PHP con Aura
-        SessionService::class => function (ContainerInterface $container) {
-            return new SessionService(
-                $container->get(Session::class)
-            );
-        },
-        
-        // Permission Service - Sistema RBAC
-        PermissionService::class => function (ContainerInterface $container) {
-            return new PermissionService(
-                $container->get(PermissionRepositoryInterface::class),
-                $container->get(UserUserGroupRepositoryInterface::class),
-                $container->get(UserGroupRepositoryInterface::class)
-            );
-        },
+         // APPLICATION SERVICES
+         // ===========================
+
+         // Session Service - Gestión de sesiones nativas PHP con Aura
+      SessionService::class => function (ContainerInterface $container) {
+         return new SessionService(
+            $container->get(Session::class)
+         );
+      },
+
+         // Permission Service - Sistema RBAC
+      PermissionService::class => function (ContainerInterface $container) {
+         return new PermissionService(
+            $container->get(PermissionRepositoryInterface::class),
+            $container->get(UserUserGroupRepositoryInterface::class),
+            $container->get(UserGroupRepositoryInterface::class)
+         );
+      },
 
          // Token Service - Generación y validación de tokens
       TokenService::class => function (ContainerInterface $container) {
@@ -129,25 +129,25 @@ return function (ContainerBuilder $containerBuilder) {
             $container->get(LoggerInterface::class)
          );
       },        // User Service - Gestión completa de usuarios
-        UserService::class => function (ContainerInterface $container) {
-            return new UserService(
-                $container->get(UserRepositoryInterface::class),
-                $container->get(PasswordHasher::class),
-                $container->get(LoggerInterface::class)
-            );
-        },
-        
-        // Login Service - Servicio central de autenticación
-        LoginService::class => function (ContainerInterface $container) {
-            return new LoginService(
-                $container->get(UserRepositoryInterface::class),
-                $container->get(PasswordHasher::class),
-                $container->get(SessionService::class),
-                $container->get(PermissionService::class),
-                $container->get(RateLimiter::class),
-                $container->get(LoggerInterface::class)
-            );
-        },
+      UserService::class => function (ContainerInterface $container) {
+         return new UserService(
+            $container->get(UserRepositoryInterface::class),
+            $container->get(PasswordHasher::class),
+            $container->get(LoggerInterface::class)
+         );
+      },
+
+         // Login Service - Servicio central de autenticación
+      LoginService::class => function (ContainerInterface $container) {
+         return new LoginService(
+            $container->get(UserRepositoryInterface::class),
+            $container->get(PasswordHasher::class),
+            $container->get(SessionService::class),
+            $container->get(PermissionService::class),
+            $container->get(RateLimiter::class),
+            $container->get(LoggerInterface::class)
+         );
+      },
 
          // ===========================
          // HTTP MIDDLEWARE
