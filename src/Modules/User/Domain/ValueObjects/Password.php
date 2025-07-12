@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\User\Domain\ValueObjects;
+namespace Viex\Modules\User\Domain\ValueObjects;
 
 use InvalidArgumentException;
 

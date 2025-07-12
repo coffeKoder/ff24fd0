@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Shared\Domain\Entities;
+namespace Viex\Modules\Shared\Domain\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 

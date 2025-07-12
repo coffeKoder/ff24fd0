@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\User\Domain\Entities;
+namespace Viex\Modules\User\Domain\Entities;
 
-use App\Modules\Shared\Domain\Entities\BaseEntity;
+use Viex\Modules\Shared\Domain\Entities\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
