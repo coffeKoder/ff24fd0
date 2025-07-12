@@ -2,8 +2,21 @@
 /**
  * @package     Organizational/Domain
  * @subpackage  Entities
- * @file        OrganizationalUnit
- * @author      Fernando Castillo <fdocst@gmail.com>
+ * @file        Organization   public function isActive(): bool {
+      return $this->isActive === 1;
+   }
+
+   public function getCreatedAt(): DateTimeImmutable {
+      return $this->createdAt;
+   }
+
+   public function getUpdatedAt(): DateTimeImmutable {
+      return $this->updatedAt;
+   }
+
+   public function isSoftDeleted(): bool {
+      return $this->softDeleted === 1;
+   }or      Fernando Castillo <fdocst@gmail.com>
  * @date        2025-07-10 13:39:03
  * @version     1.0.0
  * @description
@@ -45,18 +58,16 @@ class OrganizationalUnit {
     */
    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parent', fetch: 'LAZY')]
    private Collection $children;
+   #[ORM\Column(name: 'is_active', type: 'smallint', options: ['default' => 1])]
+   private int $isActive = 1;
 
-   #[ORM\Column(type: 'boolean')]
-   private bool $isActive = true;
-
-   #[ORM\Column(type: 'datetime_immutable')]
+   #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
    private DateTimeImmutable $createdAt;
 
-   #[ORM\Column(type: 'datetime_immutable')]
+   #[ORM\Column(name: 'updated_at', type: 'datetime_immutable')]
    private DateTimeImmutable $updatedAt;
-
-   #[ORM\Column(type: 'boolean')]
-   private bool $softDeleted = false;
+   #[ORM\Column(name: 'soft_deleted', type: 'smallint', options: ['default' => 0])]
+   private int $softDeleted = 0;
 
    /**
     * Constructor
@@ -102,7 +113,7 @@ class OrganizationalUnit {
    }
 
    public function isActive(): bool {
-      return $this->isActive;
+      return $this->isActive === 1;
    }
 
    public function getCreatedAt(): DateTimeImmutable {
@@ -114,7 +125,7 @@ class OrganizationalUnit {
    }
 
    public function isSoftDeleted(): bool {
-      return $this->softDeleted;
+      return $this->softDeleted === 1;
    }
 
    // Setters y métodos de negocio
@@ -141,12 +152,12 @@ class OrganizationalUnit {
    }
 
    public function activate(): void {
-      $this->isActive = true;
+      $this->isActive = 1;
       $this->updateTimestamp();
    }
 
    public function deactivate(): void {
-      $this->isActive = false;
+      $this->isActive = 0;
       $this->updateTimestamp();
    }
 
@@ -154,8 +165,8 @@ class OrganizationalUnit {
     * Soft delete de la unidad organizacional
     */
    public function delete(): void {
-      $this->softDeleted = true;
-      $this->isActive = false;
+      $this->softDeleted = 1;
+      $this->isActive = 0;
       $this->updateTimestamp();
    }
 
@@ -163,8 +174,8 @@ class OrganizationalUnit {
     * Restaurar unidad organizacional eliminada
     */
    public function restore(): void {
-      $this->softDeleted = false;
-      $this->isActive = true;
+      $this->softDeleted = 0;
+      $this->isActive = 1;
       $this->updateTimestamp();
    }
 

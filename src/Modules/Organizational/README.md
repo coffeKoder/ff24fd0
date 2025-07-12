@@ -174,10 +174,10 @@ El valor real de este módulo se manifiesta en cómo otros módulos lo utilizan.
 -  `name`: Nombre de la unidad.
 -  `type`: Tipo de unidad (Facultad, Escuela, etc.).
 -  `parent_id`: Relación jerárquica.
--  `is_active`: estado del registro
--  `created_at`: datetime de la creacion del registro
--  `updated_at`: datetime de la ultima actualizacion del registro
--  `soft_delete`: datetime de la eliminacion logica del registro
+-  `is_active`: Estado del registro (smallint, 0/1 para false/true)
+-  `created_at`: Datetime de la creación del registro
+-  `updated_at`: Datetime de la última actualización del registro
+-  `soft_deleted`: Indicador de eliminación lógica (smallint, 0/1 para false/true)
 
 ---
 

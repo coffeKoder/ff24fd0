@@ -31,7 +31,7 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
     * {@inheritdoc}
     */
    public function findByName(string $name): ?OrganizationalUnit {
-      return $this->findOneBy(['name' => $name, 'softDeleted' => false]);
+      return $this->findOneBy(['name' => $name, 'softDeleted' => 0]);
    }
 
    /**
@@ -40,8 +40,8 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
    public function findByType(string $type): array {
       return $this->findBy([
          'type' => $type,
-         'isActive' => true,
-         'softDeleted' => false
+         'isActive' => 1,
+         'softDeleted' => 0
       ], ['name' => 'ASC']);
    }
 
@@ -50,8 +50,8 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
     */
    public function findActiveUnits(): array {
       return $this->findBy([
-         'isActive' => true,
-         'softDeleted' => false
+         'isActive' => 1,
+         'softDeleted' => 0
       ], ['type' => 'ASC', 'name' => 'ASC']);
    }
 
@@ -61,8 +61,8 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
    public function findRootUnits(): array {
       return $this->findBy([
          'parent' => null,
-         'isActive' => true,
-         'softDeleted' => false
+         'isActive' => 1,
+         'softDeleted' => 0
       ], ['name' => 'ASC']);
    }
 
@@ -72,8 +72,8 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
    public function findByParentId(int $parentId): array {
       return $this->findBy([
          'parent' => $parentId,
-         'isActive' => true,
-         'softDeleted' => false
+         'isActive' => 1,
+         'softDeleted' => 0
       ], ['name' => 'ASC']);
    }
 
@@ -168,8 +168,8 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
       return $qb->select('ou')
          ->from(OrganizationalUnit::class, 'ou')
          ->where('ou.name LIKE :searchTerm')
-         ->andWhere('ou.isActive = true')
-         ->andWhere('ou.softDeleted = false')
+         ->andWhere('ou.isActive = 1')
+         ->andWhere('ou.softDeleted = 0')
          ->setParameter('searchTerm', '%' . $searchTerm . '%')
          ->orderBy('ou.type', 'ASC')
          ->addOrderBy('ou.name', 'ASC')
@@ -245,7 +245,7 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
       $qb->select('COUNT(ou.id)')
          ->from(OrganizationalUnit::class, 'ou')
          ->where('ou.name = :name')
-         ->andWhere('ou.softDeleted = false')
+         ->andWhere('ou.softDeleted = 0')
          ->setParameter('name', $name);
 
       if ($excludeId !== null) {
@@ -266,7 +266,7 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
          ->from(OrganizationalUnit::class, 'ou')
          ->where('ou.name = :name')
          ->andWhere('ou.type = :type')
-         ->andWhere('ou.softDeleted = false')
+         ->andWhere('ou.softDeleted = 0')
          ->setParameter('name', $name)
          ->setParameter('type', $type);
 
@@ -320,8 +320,8 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
 
       $result = $qb->select('ou.type, COUNT(ou.id) as count')
          ->from(OrganizationalUnit::class, 'ou')
-         ->where('ou.isActive = true')
-         ->andWhere('ou.softDeleted = false')
+         ->where('ou.isActive = 1')
+         ->andWhere('ou.softDeleted = 0')
          ->groupBy('ou.type')
          ->orderBy('count', 'DESC')
          ->getQuery()
@@ -343,8 +343,8 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
 
       $result = $qb->select('DISTINCT ou.type')
          ->from(OrganizationalUnit::class, 'ou')
-         ->where('ou.isActive = true')
-         ->andWhere('ou.softDeleted = false')
+         ->where('ou.isActive = 1')
+         ->andWhere('ou.softDeleted = 0')
          ->orderBy('ou.type', 'ASC')
          ->getQuery()
          ->getResult();
@@ -361,8 +361,8 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
       return (int) $qb->select('COUNT(u.id)')
          ->from('App\User\Domain\Entities\User', 'u')
          ->where('u.mainOrganizationalUnit = :unitId')
-         ->andWhere('u.isActive = true')
-         ->andWhere('u.softDeleted = false')
+         ->andWhere('u.is_active = true')
+         ->andWhere('u.soft_deleted = false')
          ->setParameter('unitId', $unitId)
          ->getQuery()
          ->getSingleScalarResult();
@@ -377,15 +377,15 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
       // Total units
       $total = $qb->select('COUNT(ou.id)')
          ->from(OrganizationalUnit::class, 'ou')
-         ->where('ou.softDeleted = false')
+         ->where('ou.softDeleted = 0')
          ->getQuery()
          ->getSingleScalarResult();
 
       // Active units
       $active = $qb->select('COUNT(ou.id)')
          ->from(OrganizationalUnit::class, 'ou')
-         ->where('ou.isActive = true')
-         ->andWhere('ou.softDeleted = false')
+         ->where('ou.isActive = 1')
+         ->andWhere('ou.softDeleted = 0')
          ->getQuery()
          ->getSingleScalarResult();
 
@@ -413,8 +413,8 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
    public function findByParent(int $parentId): array {
       return $this->findBy([
          'parent' => $parentId,
-         'isActive' => true,
-         'softDeleted' => false
+         'isActive' => 1,
+         'softDeleted' => 0
       ], ['name' => 'ASC']);
    }
 
@@ -425,7 +425,7 @@ class DoctrineOrganizationalUnitRepository implements OrganizationalUnitReposito
       $qb = $this->entityManager->createQueryBuilder();
       $qb->select('ou')
          ->from(OrganizationalUnit::class, 'ou')
-         ->where('ou.softDeleted = false');
+         ->where('ou.softDeleted = 0');
 
       if ($search !== null && $search !== '') {
          $qb->andWhere('ou.name LIKE :search')
