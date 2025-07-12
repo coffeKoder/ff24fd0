@@ -94,11 +94,11 @@ src/User/Application/
 src/User/Infrastructure/
 ├── Persistence/
 │   └── Doctrine/
-│       ├── DoctrineUserRepository.php          # ✅ Implementado
-│       ├── DoctrineUserGroupRepository.php     # ✅ Implementado
-│       ├── DoctrinePermissionRepository.php    # ✅ Implementado
-│       ├── DoctrinePasswordResetRepository.php # ✅ Implementado
-│       └── DoctrineUserUserGroupRepository.php # ✅ Implementado
+│       ├── DoctrineUserRepository.php
+│       ├── DoctrineUserGroupRepository.php
+│       ├── DoctrinePermissionRepository.php
+│       ├── DoctrinePasswordResetRepository.php
+│       └── DoctrineUserUserGroupRepository.php
 ├── Security/
 │   ├── PasswordHasher.php
 │   ├── TokenGenerator.php
