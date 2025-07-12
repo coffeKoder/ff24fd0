@@ -80,7 +80,8 @@ class OrganizationalController {
          $responseData = [
             'status' => 'error',
             'message' => 'Error al obtener unidades organizacionales',
-            'error' => $e->getMessage()
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
          ];
 
          $response->getBody()->write(json_encode($responseData));
